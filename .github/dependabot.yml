@@ -1,0 +1,8 @@
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: daily
+  - package-ecosystem: "terraform"
+    directory: "/terraform"
+    schedule:
+      interval: daily
