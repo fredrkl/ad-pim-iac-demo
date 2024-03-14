@@ -1,7 +1,7 @@
 # If you want to use a spesific `subscription` for this test, add it to the provider configuration
 provider "azurerm" {
   features {}
-  subscription_id = "d8fc2dcc-fe0e-418a-bf44-7d2512d6d068"
+  subscription_id = "57cd39e7-07f1-4555-adea-802d4fc5a5e1"
 }
 
 run "setup_tests"{

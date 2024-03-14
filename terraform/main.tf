@@ -21,7 +21,7 @@ terraform {
   }
   backend "azurerm" {
     resource_group_name  = "terraform-state-files"
-    storage_account_name = "terraformdemostatefiles"
+    storage_account_name = "tfaddemostatefiles"
     container_name       = "ad-pim-demo-tfstate"
     key                  = "terraform.tfstate"
   }
