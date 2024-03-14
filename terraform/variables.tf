@@ -1,6 +1,7 @@
 variable "resource_group_name" {
   type        = string
   description = "Name of the resource group"
+  default     = "testing"
 
   validation {
     condition     = length(var.resource_group_name) <= 30
