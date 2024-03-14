@@ -8,4 +8,4 @@ This repository contains demo IaC (Infrastructure as Code) for Azure AD Privileg
 
 ## PIM for Azure Resources
 
-PIM for Azure Resources is a service in Azure that enables you to manage, control, and monitor access within your organization. It provides just-in-time privileged access to Azure resources.
+PIM for Azure Resources is a service in Azure that enables you to manage, control, and monitor just-in-time Azure resources access within your organization.
