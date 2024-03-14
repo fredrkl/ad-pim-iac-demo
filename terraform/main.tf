@@ -2,11 +2,6 @@ provider "azurerm" {
   features {}
 }
 
-resource "azurerm_resource_group" "resource_group" {
-  name     = var.resource_group_name
-  location = "northeurope"
-}
-
 terraform {
   required_version = ">= 1.7"
   required_providers {
