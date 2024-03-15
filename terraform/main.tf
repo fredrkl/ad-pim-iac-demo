@@ -16,6 +16,12 @@ resource "azurerm_pim_eligible_role_assignment" "main" {
   scope               = data.azurerm_subscription.main.id
   role_definition_id  = "${data.azurerm_subscription.main.id}${data.azurerm_role_definition.main.id}"
   principal_id        = data.azurerm_client_config.current.object_id
+
+  schedule {
+    expiration {
+      duration_hours = 5
+    }
+  }
 }
 
 terraform {
