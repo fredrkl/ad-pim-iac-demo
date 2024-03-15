@@ -2,6 +2,22 @@ provider "azurerm" {
   features {}
 }
 
+data "azurerm_subscription" "main" {
+  subscription_id = "57cd39e7-07f1-4555-adea-802d4fc5a5e1"
+}
+
+data "azurerm_role_definition" "main" {
+  name = "Reader"
+}
+
+data "azurerm_client_config" "current" {}
+
+resource "azurerm_pim_eligible_role_assignment" "main" {
+  scope               = data.azurerm_subscription.main.id
+  role_definition_id  = "${data.azurerm_subscription.main.id}${data.azurerm_role_definition.main.id}"
+  principal_id        = data.azurerm_client_config.current.id
+}
+
 terraform {
   required_version = ">= 1.7"
   required_providers {
