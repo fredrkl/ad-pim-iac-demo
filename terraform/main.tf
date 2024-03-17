@@ -24,6 +24,9 @@ resource "azurerm_pim_eligible_role_assignment" "main" {
   }
 }
 
+#resource "azapi_resource_action" "role_eligable_request" {
+#}
+
 terraform {
   required_version = ">= 1.7"
 
@@ -32,9 +35,9 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "3.95.0"
     }
-    azuread = {
-      source  = "hashicorp/azuread"
-      version = "2.47.0"
+    azapi = {
+      source  = "Azure/azapi"
+      version = "1.12.1"
     }
   }
   backend "azurerm" {
