@@ -18,4 +18,4 @@ PIM for Azure Resources is a service in Azure that enables you to manage, contro
 Unexpected status 400 with error: RoleAssignmentRequestPolicyValidationFailed: The following policy rules failed: ["ExpirationRule"]
 ```
 
-- It is not possible to set the PIM role assignment expiration duration to not expire.
+- It is not possible to set the PIM role assignment expiration duration to not expire without chainging the `RoleManagementPolicyExpirationRule` first.
