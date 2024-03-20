@@ -9,12 +9,44 @@ function listPolicyAssignments {
   $ErrorActionPreference = "Stop"
   
   Write-Host "Scope is [$Scope]"
+  Write-Host "Role is [$Role]"
+
+  # Get the policy assignment
   $PolicyId = Get-AzRoleManagementPolicyAssignment -Scope $Scope | Where-Object RoleDefinitionDisplayName -EQ $Role | ForEach-Object PolicyId
   Write-Host "PolicyId is [$PolicyId] for Role [$Role]"
 
+  # Get the policy itself
+  $Policy = Get-AzRoleManagementPolicy -Scope $Scope | Where-Object Id -eq $PolicyId
+
+ # $expirationRule = @{
+ #             isExpirationRequired = "false";
+ #             maximumDuration = "P180D";
+ #             id = "Expiration_Admin_Eligibility";
+ #             ruleType = [RoleManagementPolicyRuleType]("RoleManagementPolicyExpirationRule");
+ #             targetCaller = "Admin";
+ #             targetOperation = @('All');
+ #             targetLevel = "Eligibility";
+ #             targetObject = $null;
+ #             targetInheritableSetting = $null;
+ #             targetEnforcedSetting = $null;
+ #         }
+  $expirationRule = @{
+    isExpirationRequired     = "false";
+    maximumDuration          = "P365D";
+    id                       = "Expiration_Admin_Eligibility";
+    ruleType                 = "RoleManagementPolicyExpirationRule";
+    targetCaller             = "Admin";
+    targetOperation          = @('All');
+    targetLevel              = "Eligibility";
+    targetObject             = $null;
+    targetInheritableSetting = $null;
+    targetEnforcedSetting    = $null;
+  }
+  $rules = @($expirationRule)
+  Update-AzRoleManagementPolicy -Scope $Scope -Name $Policy.Name -Rule $rules
+
   #$Policy = Get-AzRoleManagementPolicy -Scope $Scope | Where-Object Id -eq $PolicyId
-  
-  #
+
   #$expirationRule = @{
   #  isExpirationRequired     = "false";
   #  maximumDuration          = "P365D";

@@ -25,7 +25,6 @@ Install-Module -Name Az -AllowClobber -Scope CurrentUser
 Connect-AzAccount
 ```
 
-
 ## Lessons Learned
 
 - The [terraform documentation](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/pim_eligible_role_assignment#schedule) states the `ExpirationRule` is optional. However, not setting it results in the error:
