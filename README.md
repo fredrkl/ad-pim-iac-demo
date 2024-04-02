@@ -13,7 +13,13 @@ PIM for Azure Resources is a service in Azure that enables you to manage, contro
 ## Powershell
 
 - [Install powershell](https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4).
-- Install Az.Resources module (go into powershell mode)
+- Go into powershell mode.
+
+```
+pwsh
+```
+
+- Install Az.Resources module
 
 ```
 Install-Module -Name Az -AllowClobber -Scope CurrentUser
@@ -23,6 +29,12 @@ Install-Module -Name Az -AllowClobber -Scope CurrentUser
 
 ```
 Connect-AzAccount
+```
+
+- Run the script
+
+```
+update-role-management-policy.ps1
 ```
 
 ## Lessons Learned
