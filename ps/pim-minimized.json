@@ -1,0 +1,87 @@
+{
+  "Description": null,
+  "DisplayName": null,
+  "Id": "/subscriptions/57cd39e7-07f1-4555-adea-802d4fc5a5e1/providers/Microsoft.Authorization/roleManagementPolicies/7ff16d3a-dbb5-4c72-98c0-9306d535862e",
+  "IsOrganizationDefault": false,
+  "LastModifiedByDisplayName": "Fredrik Klingenberg",
+  "LastModifiedByEmail": null,
+  "LastModifiedById": null,
+  "LastModifiedByType": null,
+  "LastModifiedDateTime": "2024-04-02T11:24:02.723Z",
+  "Name": "7ff16d3a-dbb5-4c72-98c0-9306d535862e",
+  "ResourceGroupName": null,
+  "Rule": [
+    {
+      "Id": "Expiration_Admin_Eligibility",
+      "IsExpirationRequired": false,
+      "MaximumDuration": "PT0S",
+      "RuleType": {},
+      "Target": {
+        "Caller": "Admin",
+        "EnforcedSetting": [],
+        "InheritableSetting": [],
+        "Level": "Eligibility",
+        "Operation": [
+          "All"
+        ],
+        "TargetObject": []
+      },
+      "TargetCaller": "Admin",
+      "TargetEnforcedSetting": [],
+      "TargetInheritableSetting": [],
+      "TargetLevel": "Eligibility",
+      "TargetObject": [],
+      "TargetOperation": [
+        "All"
+      ]
+    },
+    {
+      "Id": "Approval_EndUser_Assignment",
+      "RuleType": {},
+      "SettingApprovalMode": {},
+      "SettingApprovalStage": [
+        {
+          "EscalationApprover": null,
+          "EscalationTimeInMinute": 0,
+          "IsApproverJustificationRequired": true,
+          "IsEscalationEnabled": false,
+          "PrimaryApprover": [
+            {
+              "Description": "securityManagers",
+              "Id": "03807c38-aa7e-479b-87c1-7ef86265691e",
+              "IsBackup": false,
+              "UserType": {}
+            }
+          ],
+          "TimeOutInDay": 1
+        }
+      ],
+      "SettingIsApprovalRequired": true,
+      "SettingIsApprovalRequiredForExtension": false,
+      "SettingIsRequestorJustificationRequired": true,
+      "Target": {
+        "Caller": "EndUser",
+        "EnforcedSetting": [],
+        "InheritableSetting": [],
+        "Level": "Assignment",
+        "Operation": [
+          "All"
+        ],
+        "TargetObject": []
+      },
+      "TargetCaller": "EndUser",
+      "TargetEnforcedSetting": [],
+      "TargetInheritableSetting": [],
+      "TargetLevel": "Assignment",
+      "TargetObject": [],
+      "TargetOperation": [
+        "All"
+      ]
+    },
+  ],
+  "Scope": "/subscriptions/57cd39e7-07f1-4555-adea-802d4fc5a5e1",
+  "ScopeDisplayName": "Subscription 1",
+  "ScopeId": "/subscriptions/57cd39e7-07f1-4555-adea-802d4fc5a5e1",
+  "ScopeType": "subscription",
+  "Type": "Microsoft.Authorization/roleManagementPolicies"
+}
