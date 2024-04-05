@@ -89,7 +89,7 @@ function listPolicyAssignments {
     settingApprovalMode       = $null;
     settingApprovalStage     = @(
       @{
-          escalationApprover = $null;
+#          escalationApprover = $null;
           escalationTimeInMinute = 0;
           isApproverJustificationRequired = "true";
           isEscalationEnabled = "false";
@@ -98,7 +98,7 @@ function listPolicyAssignments {
               description = "securityManagers";
               id = "03807c38-aa7e-479b-87c1-7ef86265691e";
               isBackup = "false";
-              userType = $null;
+              userType = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Support.UserType]("Group");
             }
           );
           timeOutInDay = 1;
