@@ -17,49 +17,11 @@ function listPolicyAssignments {
 
   # Get the policy itself
   $Policy = Get-AzRoleManagementPolicy -Scope $Scope | Where-Object Id -eq $PolicyId
+  
+  $jsonPolicyOutput = ConvertTo-Json -Depth 10 $Policy
+  #Write-Host $Policy
+  $jsonPolicyOutput | Out-File -FilePath "./output-pim.json"
 
- # $expirationRule = @{
- #             isExpirationRequired = "false";
- #             maximumDuration = "P180D";
- #             id = "Expiration_Admin_Eligibility";
- #             ruleType = [RoleManagementPolicyRuleType]("RoleManagementPolicyExpirationRule");
- #             targetCaller = "Admin";
- #             targetOperation = @('All');
- #             targetLevel = "Eligibility";
- #             targetObject = $null;
- #             targetInheritableSetting = $null;
- #             targetEnforcedSetting = $null;
- #         }
-  $expirationRule = @{
-    isExpirationRequired     = "false";
-    maximumDuration          = "P365D";
-    id                       = "Expiration_Admin_Eligibility";
-    ruleType                 = "RoleManagementPolicyExpirationRule";
-    targetCaller             = "Admin";
-    targetOperation          = @('All');
-    targetLevel              = "Eligibility";
-    targetObject             = $null;
-    targetInheritableSetting = $null;
-    targetEnforcedSetting    = $null;
-  }
-  $rules = @($expirationRule)
-  Update-AzRoleManagementPolicy -Scope $Scope -Name $Policy.Name -Rule $rules
-
-  #$Policy = Get-AzRoleManagementPolicy -Scope $Scope | Where-Object Id -eq $PolicyId
-
-  #$expirationRule = @{
-  #  isExpirationRequired     = "false";
-  #  maximumDuration          = "P365D";
-  #  id                       = "Expiration_Admin_Eligibility";
-  #  ruleType                 = "RoleManagementPolicyExpirationRule";
-  #  targetCaller             = "Admin";
-  #  targetOperation          = @('All');
-  #  targetLevel              = "Eligibility";
-  #  targetObject             = $null;
-  #  targetInheritableSetting = $null;
-  #  targetEnforcedSetting    = $null;
-  #}
-  #
   #@pimRule = @{
   #  ruleType = "RoleManagementPolicyPimRule";
   #  id = "PIM_Admin_Eligibility";
@@ -76,7 +38,107 @@ function listPolicyAssignments {
   #    pimDuration = "P7D";
   #  }
   #}
-  #
+
+#  $rule1
+#     
+#      "RuleType": {},
+#      "SettingApprovalMode": {},
+#      "SettingApprovalStage": [
+#        {
+#          "EscalationApprover": null,
+#          "EscalationTimeInMinute": 0,
+#          "IsApproverJustificationRequired": true,
+#          "IsEscalationEnabled": false,
+#          "PrimaryApprover": [
+#            {
+#              "Description": "securityManagers",
+#              "Id": "03807c38-aa7e-479b-87c1-7ef86265691e",
+#              "IsBackup": false,
+#              "UserType": {}
+#            }
+#          ],
+#          "TimeOutInDay": 1
+#        }
+#      ],
+#      "SettingIsApprovalRequired": true,
+#      "SettingIsApprovalRequiredForExtension": false,
+#      "SettingIsRequestorJustificationRequired": true,
+#      "Target": {
+#        "Caller": "EndUser",
+#        "EnforcedSetting": [],
+#        "InheritableSetting": [],
+#        "Level": "Assignment",
+#        "Operation": [
+#          "All"
+#        ],
+#        "TargetObject": []
+#      },
+#      "TargetCaller": "EndUser",
+#      "TargetEnforcedSetting": [],
+#      "TargetInheritableSetting": [],
+#      "TargetLevel": "Assignment",
+#      "TargetObject": [],
+#      "TargetOperation": [
+#        "All"
+#      ]
+#
+# Need to have the full namespace for the ruleType: https://github.com/Azure/azure-powershell/issues/18781
+  $pimRule = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyApprovalRule]@{
+    id                        = "Approval_EndUser_Assignment";
+    ruleType                  = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Support.RoleManagementPolicyRuleType]("RoleManagementPolicyApprovalRule");
+    settingApprovalMode       = $null;
+    settingApprovalStage     = @(
+      @{
+          escalationApprover = $null;
+          escalationTimeInMinute = 0;
+          isApproverJustificationRequired = "true";
+          isEscalationEnabled = "false";
+          primaryApprover = @(
+            @{
+              description = "securityManagers";
+              id = "03807c38-aa7e-479b-87c1-7ef86265691e";
+              isBackup = "false";
+              userType = $null;
+            }
+          );
+          timeOutInDay = 1;
+        }
+    );
+    settingIsApprovalRequired = "true";
+    settingIsApprovalRequiredForExtension = "false";
+    settingIsRequestorJustificationRequired = "true";
+    target =
+      @{
+        caller = "EndUser";
+        enforcedSetting = $null;
+        inheritableSetting = $null;
+        level = "Assignment";
+        operation = @('All');
+      };
+    targetCaller               = "EndUser";
+    targetEnforcedSetting      = $null;
+    targetInheritableSetting   = $null;
+    targetLevel                = "Assignment";
+    targetObject               = $null;
+    targetOperation            = @('All');
+  }
+
+  $expirationRule = @{
+    id                       = "Expiration_Admin_Eligibility";
+    ruleType                 = "RoleManagementPolicyExpirationRule";
+    isExpirationRequired     = "false";
+    maximumDuration          = "P365D";
+    targetCaller             = "Admin";
+    targetOperation          = @('All');
+    targetLevel              = "Eligibility";
+    targetObject             = $null;
+    targetInheritableSetting = $null;
+    targetEnforcedSetting    = $null;
+  }
+
+  $rules = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.IRoleManagementPolicyRule[]]@($pimRule)
+  Update-AzRoleManagementPolicy -Scope $Scope -Name $Policy.Name -Rule $rules -Debug
+
   #$rules = @($expirationRule)
   #Update-AzRoleManagementPolicy -Scope $scope -Name $Policy.Name -Rule $rules
 }
