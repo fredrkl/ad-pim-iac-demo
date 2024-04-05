@@ -17,15 +17,14 @@ function listPolicyAssignments {
 
   # Get the policy itself
   $Policy = Get-AzRoleManagementPolicy -Scope $Scope | Where-Object Id -eq $PolicyId
-  
+
   # Need to have the full namespace for the ruleType: https://github.com/Azure/azure-powershell/issues/18781
   $pimRule = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyApprovalRule]@{
     id                        = "Approval_EndUser_Assignment";
     ruleType                  = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Support.RoleManagementPolicyRuleType]("RoleManagementPolicyApprovalRule");
     settingApprovalMode       = $null;
-    settingApprovalStage     = @(
+    settingApprovalStage      = @(
       @{
-#          escalationApprover = $null;
           escalationTimeInMinute = 0;
           isApproverJustificationRequired = "true";
           isEscalationEnabled = "false";
@@ -58,6 +57,20 @@ function listPolicyAssignments {
     targetObject               = $null;
     targetOperation            = @('All');
   }
+  
+  # Require dual approval for role assignments
+  $dualPim = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyExpirationRule]@{
+    id                       = "Expiration_EndUser_Assignment";
+    ruleType                  = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Support.RoleManagementPolicyRuleType]("RoleManagementPolicyExpirationRule");
+    isExpirationRequired     = "false";
+    maximumDuration          = "PT3H";
+    targetCaller             = "EndUser";
+    targetOperation          = @('All');
+    targetLevel              = "Assignment";
+    targetObject             = $null;
+    targetInheritableSetting = $null;
+    targetEnforcedSetting    = $null;
+  }
 
   # Make non-expiring eligibility possible
   $expirationRule = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyExpirationRule]@{
@@ -73,7 +86,7 @@ function listPolicyAssignments {
     targetEnforcedSetting    = $null;
   }
 
-  $rules = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.IRoleManagementPolicyRule[]]@($pimRule, $expirationRule)
+  $rules = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.IRoleManagementPolicyRule[]]@($pimRule, $expirationRule, $dualPim)
   Update-AzRoleManagementPolicy -Scope $Scope -Name $Policy.Name -Rule $rules -Debug
 }
 
