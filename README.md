@@ -1,6 +1,6 @@
 # AD PIM IaC Demo
 
-This repository contains demo IaC (Infrastructure as Code) for Azure AD Privileged Identity Management.
+This repository contains demo IaC (Infrastructure as Code) for Azure AD Privileged Identity Management. The terraform support for Azure resources PIM settings such as `Approvers` and `Activation maximum duration (hours)` is currently non-existing.
 
 ## Requirements
 
