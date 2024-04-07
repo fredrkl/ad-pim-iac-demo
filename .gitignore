@@ -1,1 +1,3 @@
 .pre-commit-trivy-cache/**
+img/*
+.DS_Store
