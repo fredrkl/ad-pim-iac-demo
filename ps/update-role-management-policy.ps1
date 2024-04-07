@@ -18,7 +18,7 @@ function listPolicyAssignments {
   # Get the policy itself
   $Policy = Get-AzRoleManagementPolicy -Scope $Scope | Where-Object Id -eq $PolicyId
 
-  # Need to have the full namespace for the ruleType: https://github.com/Azure/azure-powershell/issues/18781
+  # Need to have the full namespace for the `rule` and `ruleType`: https://github.com/Azure/azure-powershell/issues/18781
   $pimRule = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyApprovalRule]@{
     id                        = "Approval_EndUser_Assignment";
     ruleType                  = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Support.RoleManagementPolicyRuleType]("RoleManagementPolicyApprovalRule");
