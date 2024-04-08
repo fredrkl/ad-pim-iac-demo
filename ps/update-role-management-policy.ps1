@@ -3,7 +3,9 @@ function listPolicyAssignments {
     [Parameter(Mandatory = $True)]
     [string]$Scope,
     [Parameter(Mandatory = $True)]
-    [string]$Role
+    [string]$Role,
+    [Parameter(Mandatory = $True)]
+    [bool]$Dual
   )
   
   $ErrorActionPreference = "Stop"
@@ -59,11 +61,11 @@ function listPolicyAssignments {
   }
   
   # Require dual approval for role assignments
-  $dualPim = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyExpirationRule]@{
+  $3hPim = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyExpirationRule]@{
     id                       = "Expiration_EndUser_Assignment";
     ruleType                  = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Support.RoleManagementPolicyRuleType]("RoleManagementPolicyExpirationRule");
     isExpirationRequired     = "false";
-    maximumDuration          = "PT3H";
+    maximumDuration          = "PT2H";
     targetCaller             = "EndUser";
     targetOperation          = @('All');
     targetLevel              = "Assignment";
@@ -86,8 +88,12 @@ function listPolicyAssignments {
     targetEnforcedSetting    = $null;
   }
 
-  $rules = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.IRoleManagementPolicyRule[]]@($pimRule, $expirationRule, $dualPim)
+  $rules = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.IRoleManagementPolicyRule[]]@($expirationRule)
+  if ($Dual) {
+    $rules += $pimRule
+    $rules += $3hPim
+  }
   Update-AzRoleManagementPolicy -Scope $Scope -Name $Policy.Name -Rule $rules -Debug
 }
 
-listPolicyAssignments -Scope "/subscriptions/57cd39e7-07f1-4555-adea-802d4fc5a5e1" -Role "Owner"
+listPolicyAssignments -Scope "/subscriptions/57cd39e7-07f1-4555-adea-802d4fc5a5e1" -Role "Owner" $true
