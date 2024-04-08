@@ -82,7 +82,7 @@ function listPolicyAssignments {
       id                       = "Expiration_EndUser_Assignment";
       ruleType                  = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Support.RoleManagementPolicyRuleType]("RoleManagementPolicyExpirationRule");
       isExpirationRequired     = "false";
-      maximumDuration          = "PT4H";
+      maximumDuration          = "PT2H";
       targetCaller             = "EndUser";
       targetOperation          = @('All');
       targetLevel              = "Assignment";
@@ -99,3 +99,4 @@ function listPolicyAssignments {
 }
 
 listPolicyAssignments -Scope "/subscriptions/57cd39e7-07f1-4555-adea-802d4fc5a5e1" -Role "Owner" "03807c38-aa7e-479b-87c1-7ef86265691e"
+#listPolicyAssignments -Scope "/subscriptions/57cd39e7-07f1-4555-adea-802d4fc5a5e1" -Role "Owner"
