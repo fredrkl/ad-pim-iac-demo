@@ -55,3 +55,4 @@ Unexpected status 400 with error: RoleAssignmentRequestPolicyValidationFailed: T
 - It is not possible to set the PIM role assignment expiration duration to `not expire` without chainging the `RoleManagementPolicyExpirationRule` first.
 - Updating or creating new `IRoleManagementPolicyRules` requires full namespace on, e.g., `Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyApprovalRule`. The same applies to `ruleType`.
 - Adding `-Debug` to the `New-AzRoleManagementPolicyRule` cmdlet provides more information on the error, including the JSON payload.
+- All the types need full namespace
