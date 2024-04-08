@@ -1,6 +1,6 @@
 # AD PIM IaC Demo
 
-This repository contains demo IaC (Infrastructure as Code) for Azure AD Privileged Identity Management. The terraform support for Azure resources PIM settings such as `Approvers` and `Activation maximum duration (hours)` is currently non-existing. There are ongoing issues tracking the implementation.
+This repository contains demo IaC (Infrastructure as Code) for Azure AD Privileged Identity Management. The terraform support for Azure resources PIM settings such as `Approvers` and `Activation maximum duration (hours)` is currently non-existing. There are ongoing issues tracking the implementation, e.g., [Privileged Identity Management (PIM)](https://github.com/hashicorp/terraform-provider-azuread/issues/68).
 
 This repository contains a powershell script that uses the `Az.Resources` module to update the PIM settings for a role assignment.
  ![PIM](./img/pim-settings.png)
