@@ -78,11 +78,11 @@ function listPolicyAssignments {
     }
 
     # Require dual approval for role assignments
-    $3hPim = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyExpirationRule]@{
+    $hourPim = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyExpirationRule]@{
       id                       = "Expiration_EndUser_Assignment";
       ruleType                  = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Support.RoleManagementPolicyRuleType]("RoleManagementPolicyExpirationRule");
       isExpirationRequired     = "false";
-      maximumDuration          = "PT2H";
+      maximumDuration          = "PT4H";
       targetCaller             = "EndUser";
       targetOperation          = @('All');
       targetLevel              = "Assignment";
@@ -92,7 +92,7 @@ function listPolicyAssignments {
     }
 
     $rules += $pimRule
-    $rules += $3hPim
+    $rules += $hourPim
   } 
 
   Update-AzRoleManagementPolicy -Scope $Scope -Name $Policy.Name -Rule $rules -Debug
