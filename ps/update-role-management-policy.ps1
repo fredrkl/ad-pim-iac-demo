@@ -9,7 +9,7 @@ function listPolicyAssignments {
   )
   
   $ErrorActionPreference = "Stop"
-  
+
   Write-Host "Scope is [$Scope]"
   Write-Host "Role is [$Role]"
 
@@ -20,6 +20,86 @@ function listPolicyAssignments {
   # Get the policy itself
   $Policy = Get-AzRoleManagementPolicy -Scope $Scope | Where-Object Id -eq $PolicyId
 
+  $expirationRule = createExpirationRule
+  $rules = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.IRoleManagementPolicyRule[]]@($expirationRule)
+
+  # Check if the optional parameter was provided
+  if ($PSBoundParameters.ContainsKey('PimGroup')) {
+    # Need to have the full namespace for the `rule` and `ruleType`: https://github.com/Azure/azure-powershell/issues/18781
+    $pimRule = createPimRule -PimGroup $PimGroup
+    $hourPim = createHourRule
+
+    $rules += $pimRule
+    $rules += $hourPim
+  } 
+
+  Update-AzRoleManagementPolicy -Scope $Scope -Name $Policy.Name -Rule $rules -Debug
+}
+
+function createHourRule {
+  # Require dual approval for role assignments
+  $hourPim = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyExpirationRule]@{
+    id                       = "Expiration_EndUser_Assignment";
+    ruleType                  = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Support.RoleManagementPolicyRuleType]("RoleManagementPolicyExpirationRule");
+    isExpirationRequired     = "false";
+    maximumDuration          = "PT2H";
+    targetCaller             = "EndUser";
+    targetOperation          = @('All');
+    targetLevel              = "Assignment";
+    targetObject             = $null;
+    targetInheritableSetting = $null;
+    targetEnforcedSetting    = $null;
+  }
+  return $hourPim
+}
+
+function createPimRule {
+  param (
+    [string]$PimGroup
+  )
+
+  $pimRule = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyApprovalRule]@{
+    id                        = "Approval_EndUser_Assignment";
+    ruleType                  = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Support.RoleManagementPolicyRuleType]("RoleManagementPolicyApprovalRule");
+    settingApprovalMode       = $null;
+    settingApprovalStage      = @(
+      @{
+          escalationTimeInMinute = 0;
+          isApproverJustificationRequired = "true";
+          isEscalationEnabled = "false";
+          primaryApprover = @(
+            @{
+              id = $PimGroup;
+              isBackup = "false";
+              userType = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Support.UserType]("Group");
+            }
+          );
+          timeOutInDay = 1;
+        }
+    );
+    settingIsApprovalRequired = "true";
+    settingIsApprovalRequiredForExtension = "false";
+    settingIsRequestorJustificationRequired = "true";
+    target =
+      @{
+        caller = "EndUser";
+        enforcedSetting = $null;
+        inheritableSetting = $null;
+        level = "Assignment";
+        operation = @('All');
+      };
+    targetCaller               = "EndUser";
+    targetEnforcedSetting      = $null;
+    targetInheritableSetting   = $null;
+    targetLevel                = "Assignment";
+    targetObject               = $null;
+    targetOperation            = @('All');
+  }
+
+  return $pimRule
+}
+
+function createExpirationRule {
   # Make non-expiring eligibility possible
   $expirationRule = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyExpirationRule]@{
     id                       = "Expiration_Admin_Eligibility";
@@ -33,69 +113,7 @@ function listPolicyAssignments {
     targetInheritableSetting = $null;
     targetEnforcedSetting    = $null;
   }
-  
-  $rules = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.IRoleManagementPolicyRule[]]@($expirationRule)
-  
-  # Check if the optional parameter was provided
-  if ($PSBoundParameters.ContainsKey('PimGroup')) {
-    # Need to have the full namespace for the `rule` and `ruleType`: https://github.com/Azure/azure-powershell/issues/18781
-    $pimRule = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyApprovalRule]@{
-      id                        = "Approval_EndUser_Assignment";
-      ruleType                  = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Support.RoleManagementPolicyRuleType]("RoleManagementPolicyApprovalRule");
-      settingApprovalMode       = $null;
-      settingApprovalStage      = @(
-        @{
-            escalationTimeInMinute = 0;
-            isApproverJustificationRequired = "true";
-            isEscalationEnabled = "false";
-            primaryApprover = @(
-              @{
-                id = $PimGroup;
-                isBackup = "false";
-                userType = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Support.UserType]("Group");
-              }
-            );
-            timeOutInDay = 1;
-          }
-      );
-      settingIsApprovalRequired = "true";
-      settingIsApprovalRequiredForExtension = "false";
-      settingIsRequestorJustificationRequired = "true";
-      target =
-        @{
-          caller = "EndUser";
-          enforcedSetting = $null;
-          inheritableSetting = $null;
-          level = "Assignment";
-          operation = @('All');
-        };
-      targetCaller               = "EndUser";
-      targetEnforcedSetting      = $null;
-      targetInheritableSetting   = $null;
-      targetLevel                = "Assignment";
-      targetObject               = $null;
-      targetOperation            = @('All');
-    }
-
-    # Require dual approval for role assignments
-    $hourPim = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyExpirationRule]@{
-      id                       = "Expiration_EndUser_Assignment";
-      ruleType                  = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Support.RoleManagementPolicyRuleType]("RoleManagementPolicyExpirationRule");
-      isExpirationRequired     = "false";
-      maximumDuration          = "PT4H";
-      targetCaller             = "EndUser";
-      targetOperation          = @('All');
-      targetLevel              = "Assignment";
-      targetObject             = $null;
-      targetInheritableSetting = $null;
-      targetEnforcedSetting    = $null;
-    }
-
-    $rules += $pimRule
-    $rules += $hourPim
-  } 
-
-  Update-AzRoleManagementPolicy -Scope $Scope -Name $Policy.Name -Rule $rules -Debug
+  return $expirationRule
 }
 
 listPolicyAssignments -Scope "/subscriptions/57cd39e7-07f1-4555-adea-802d4fc5a5e1" -Role "Owner" "03807c38-aa7e-479b-87c1-7ef86265691e"
