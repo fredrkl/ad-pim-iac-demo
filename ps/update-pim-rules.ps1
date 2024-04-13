@@ -4,9 +4,12 @@ param (
   [Parameter(Mandatory = $True)]
   [string]$Role,
   [Parameter(Mandatory = $False)]
+  [string]$RequirePimApproval,
+  [Parameter(Mandatory = $False)]
   [string]$PimGroup
 )
 
+# Need to have the full namespace for `rule` and `ruleType`: https://github.com/Azure/azure-powershell/issues/18781
 function createHourRule {
   # Require dual approval for role assignments
   $hourPim = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.RoleManagementPolicyExpirationRule]@{
@@ -24,7 +27,7 @@ function createHourRule {
   return $hourPim
 }
 
-function createPimRule {
+function createPimApprovalRule {
   param (
     [string]$PimGroup
   )
@@ -87,11 +90,12 @@ function createExpirationRule {
   return $expirationRule
 }
 
-
+# Main flow
 $ErrorActionPreference = "Stop"
 
 Write-Host "Scope is [$Scope]"
 Write-Host "Role is [$Role]"
+Write-Host "RequirePimApproval is [$RequirePimApproval]"
 
 # Get the policy assignment
 $PolicyId = Get-AzRoleManagementPolicyAssignment -Scope $Scope | Where-Object RoleDefinitionDisplayName -EQ $Role | ForEach-Object PolicyId
@@ -104,17 +108,12 @@ $expirationRule = createExpirationRule
 $rules = [Microsoft.Azure.PowerShell.Cmdlets.Resources.Authorization.Models.Api20201001Preview.IRoleManagementPolicyRule[]]@($expirationRule)
 
 # Check if the optional parameter was provided
-if ($PSBoundParameters.ContainsKey('PimGroup')) {
-  # Need to have the full namespace for the `rule` and `ruleType`: https://github.com/Azure/azure-powershell/issues/18781
-  $pimRule = createPimRule -PimGroup $PimGroup
-  $hourPim = createHourRule
-
-  $rules += $pimRule
-  $rules += $hourPim
+if ($RequirePimApproval -eq "true") {
+  $rules += createPimApprovalRule -PimGroup $PimGroup
+  $rules += createHourRule
 } 
 
-Update-AzRoleManagementPolicy -Scope $Scope -Name $Policy.Name -Rule $rules -Debug
-
-#listPolicyAssignments -Scope "/subscriptions/57cd39e7-07f1-4555-adea-802d4fc5a5e1" -Role "Owner" "03807c38-aa7e-479b-87c1-7ef86265691e"
-#listPolicyAssignments -Scope "/subscriptions/57cd39e7-07f1-4555-adea-802d4fc5a5e1" -Role "Owner"
-#./update-role-management-policy.ps1 -Scope "/subscriptions/57cd39e7-07f1-4555-adea-802d4fc5a5e1" -Role "Owner" "03807c38-aa7e-479b-87c1-7ef86265691e
+Update-AzRoleManagementPolicy -Scope $Scope -Name $Policy.Name -Rule $rules -Confirm:$false
+# Call this script with the following parameters:
+# update-role-management-policy.ps1 -Scope '${subscription_id}' -Role '${role_definition_name}' -RequirePimApproval '${require_pim_approval}' -PimGroup '${principal_id}'"
+# ./new-version.ps1 -Scope "/subscriptions/57cd39e7-07f1-4555-adea-802d4fc5a5e1" -Role "Reader" -RequirePimApproval '$false' -PimGroup "03807c38-aa7e-479b-87c1-7ef86265691e
