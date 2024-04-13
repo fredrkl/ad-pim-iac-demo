@@ -41,7 +41,7 @@ Connect-AzAccount
 - Run the script
 
 ```
-update-role-management-policy.ps1
+update-pim-rules.ps1
 ```
 
 ## Lessons Learned
