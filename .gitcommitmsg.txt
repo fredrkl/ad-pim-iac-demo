@@ -1,0 +1,8 @@
+
+
+Co-authored-by: Mark van Egdom <mark.van.egdom@bidbax.no>
+# Co-authored-by: Roy Veshovda <roy@veshovda.no>
+# Co-authored-by: Varun Sivapalan <varun.sivapalan@gmail.com>
+# Co-authored-by: Lasse Heia <lasse.heia@outlook.com>
+# Co-authored-by: Lasse Heia <lasse.heia@outlook.com>
+# Co-authored-by: Leonard Lee <leonard.lee@bidbax.no>
